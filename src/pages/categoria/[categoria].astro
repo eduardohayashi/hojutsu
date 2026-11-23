@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArtigoCard from '../../components/ArtigoCard.astro';
+import { CATEGORIAS } from '../../content.config';
+import { url } from '../../utils/url';
+
+export function getStaticPaths() {
+  return Object.keys(CATEGORIAS).map((categoria) => ({ params: { categoria } }));
+}
+
+const { categoria } = Astro.params as { categoria: keyof typeof CATEGORIAS };
+
+const artigos = (await getCollection('artigos', ({ data }) => !data.rascunho && data.categoria === categoria)).sort(
+  (a, b) => b.data.data.valueOf() - a.data.data.valueOf(),
+);
+---
+
+<Base title={CATEGORIAS[categoria]} description={`Artigos de ${CATEGORIAS[categoria]} no Hojutsu.pt.`}>
+  <h1>{CATEGORIAS[categoria]}</h1>
+  <ul class="categorias">
+    <li><a href={url('/artigos')}>Todos</a></li>
+    {Object.entries(CATEGORIAS).map(([chave, nome]) => (
+      <li><a href={url(`/categoria/${chave}`)} aria-current={chave === categoria ? 'page' : undefined}>{nome}</a></li>
+    ))}
+  </ul>
+  {artigos.length === 0
+    ? <p>Ainda não há artigos nesta categoria.</p>
+    : <div class="grelha">{artigos.map((artigo) => <ArtigoCard artigo={artigo} />)}</div>}
+</Base>

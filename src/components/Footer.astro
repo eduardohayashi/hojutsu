@@ -1,0 +1,15 @@
+---
+import { url } from '../utils/url';
+const ano = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="rodape-marca">炮 Hojutsu.pt</p>
+    <p>
+      Artigos sobre armas, história e curiosidades. Conteúdo informativo e histórico,
+      sem incentivo à violência. <a href={url('/sobre')}>Saiba mais</a>.
+    </p>
+    <p class="direitos">© {ano} Hojutsu.pt</p>
+  </div>
+</footer>

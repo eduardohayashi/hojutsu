@@ -1,0 +1,19 @@
+---
+import { url } from '../utils/url';
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="marca" href={url('/')}>
+      <span class="selo" aria-hidden="true">炮</span>
+      <span class="marca-nome">Hojutsu<small>.pt</small></span>
+    </a>
+    <nav aria-label="Principal">
+      <a href={url('/artigos')}>Artigos</a>
+      <a href={url('/categoria/armas')}>Armas</a>
+      <a href={url('/categoria/historia')}>História</a>
+      <a href={url('/categoria/curiosidades')}>Curiosidades</a>
+      <a href={url('/sobre')}>Sobre</a>
+    </nav>
+  </div>
+</header>

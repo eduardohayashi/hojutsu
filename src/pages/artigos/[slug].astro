@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { CATEGORIAS } from '../../content.config';
+import { url } from '../../utils/url';
+import { imagemDoArtigo, formatarData } from '../../utils/artigos';
+
+export async function getStaticPaths() {
+  const artigos = await getCollection('artigos', ({ data }) => !data.rascunho);
+  return artigos.map((artigo) => ({ params: { slug: artigo.id }, props: { artigo } }));
+}
+
+const { artigo } = Astro.props;
+const { titulo, resumo, data, categoria, tempoLeituraMinutos, tags, fontes, imagemAlt, revisadoPor } = artigo.data;
+const { Content } = await render(artigo);
+const imagem = imagemDoArtigo(artigo);
+
+const dadosEstruturados = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: titulo,
+  description: resumo,
+  datePublished: data.toISOString(),
+  inLanguage: 'pt-PT',
+  articleSection: CATEGORIAS[categoria],
+  keywords: tags.join(', '),
+  ...(imagem ? { image: new URL(url(imagem), Astro.site).href } : {}),
+  publisher: { '@type': 'Organization', name: 'Hojutsu.pt' },
+};
+---
+
+<Base title={titulo} description={resumo} image={imagem}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(dadosEstruturados)} />
+
+  <article class="artigo">
+    <span class={`etiqueta etiqueta-${categoria}`}>{CATEGORIAS[categoria]}</span>
+    <h1>{titulo}</h1>
+    <p class="meta">
+      {formatarData(data)} · {tempoLeituraMinutos} min de leitura
+      {revisadoPor && <> · Revisto por {revisadoPor}</>}
+    </p>
+    {imagem && <img class="capa" src={url(imagem)} alt={imagemAlt ?? titulo} />}
+
+    <div class="artigo-texto"><Content /></div>
+
+    {fontes.length > 0 && (
+      <section class="fontes">
+        <h2>Fontes e leitura adicional</h2>
+        <ul>{fontes.map((fonte) => <li>{fonte}</li>)}</ul>
+      </section>
+    )}
+
+    {tags.length > 0 && <ul class="tags">{tags.map((tag) => <li>#{tag}</li>)}</ul>}
+
+    <p style="margin-top:2rem"><a href={url('/artigos')}>← Todos os artigos</a></p>
+  </article>
+</Base>

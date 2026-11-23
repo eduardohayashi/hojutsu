@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ArtigoCard from '../components/ArtigoCard.astro';
+import { url } from '../utils/url';
+
+const artigos = (await getCollection('artigos', ({ data }) => !data.rascunho))
+  .sort((a, b) => b.data.data.valueOf() - a.data.data.valueOf())
+  .slice(0, 6);
+---
+
+<Base title="Hojutsu.pt">
+  <section class="hero">
+    <img src={url('/logo2.webp')} alt="Hojutsu.pt, um arcabuz japonês vermelho e dourado com o ideograma 炮" />
+    <p>Armas, história e curiosidades. Do arcabuz de Tanegashima à arte do hōjutsu.</p>
+  </section>
+
+  <ul class="categorias">
+    <li><a href={url('/categoria/armas')}>Armas</a></li>
+    <li><a href={url('/categoria/historia')}>História</a></li>
+    <li><a href={url('/categoria/curiosidades')}>Curiosidades</a></li>
+  </ul>
+
+  <h2>Artigos recentes</h2>
+  {artigos.length === 0
+    ? <p>Ainda não há artigos publicados.</p>
+    : <div class="grelha">{artigos.map((artigo) => <ArtigoCard artigo={artigo} />)}</div>}
+
+  <p style="margin-top:1.5rem"><a href={url('/artigos')}>Ver todos os artigos →</a></p>
+</Base>

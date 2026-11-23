@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIAS } from '../content.config';
+import { url } from '../utils/url';
+import { imagemDoArtigo, formatarData } from '../utils/artigos';
+
+interface Props {
+  artigo: CollectionEntry<'artigos'>;
+}
+
+const { artigo } = Astro.props;
+const { titulo, resumo, data, categoria, tempoLeituraMinutos, imagemAlt } = artigo.data;
+const imagem = imagemDoArtigo(artigo);
+---
+
+<article class="cartao">
+  <a class="cartao-link" href={url(`/artigos/${artigo.id}`)}>
+    {imagem && <img src={url(imagem)} alt={imagemAlt ?? titulo} loading="lazy" />}
+    <div class="cartao-corpo">
+      <span class={`etiqueta etiqueta-${categoria}`}>{CATEGORIAS[categoria]}</span>
+      <h3>{titulo}</h3>
+      <p>{resumo}</p>
+      <p class="meta">{formatarData(data)} · {tempoLeituraMinutos} min de leitura</p>
+    </div>
+  </a>
+</article>
