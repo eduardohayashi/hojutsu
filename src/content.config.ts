@@ -22,6 +22,23 @@ const artigos = defineCollection({
     imagem: z.string().optional(), // ex.: /imagens/tanegashima.jpg
     imagemAlt: z.string().optional(),
     revisadoPor: z.string().optional(), // preencher quando o revisor aprovar
+    // Formato da publicação: texto, imagem_texto (padrão) ou carrossel.
+    formato: z.enum(['texto', 'imagem_texto', 'carrossel']).optional(),
+    // Só no formato carrossel: slides que o script scripts/gerar-slides.mjs
+    // transforma em imagens para o Instagram (public/instagram/<artigo>/).
+    carrossel: z
+      .object({
+        tipo: z.string(),
+        slides: z.array(
+          z.object({
+            tipo: z.enum(['capa', 'conteudo']).default('conteudo'),
+            rotulo: z.string().optional(),
+            titulo: z.string(),
+            texto: z.string().optional(),
+          }),
+        ),
+      })
+      .optional(),
     rascunho: z.boolean().default(false),
   }),
 });
